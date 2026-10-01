@@ -32,6 +32,7 @@ Behind that, for the Claude Code sessions that build apps:
 
 How to start a new app from the kit: `docs/NEW-APP.md`.
 Where each piece came from: `docs/SOURCES.md`.
+What the shop is for: `SIGN.md`, copied into every app unchanged.
 
 ## Running it on a computer
 
