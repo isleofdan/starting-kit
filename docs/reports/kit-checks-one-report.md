@@ -42,7 +42,9 @@ copied from it gets both:
    scope". The brief called the machine "proven for GitHub" (true for
    ordinary files only). The safety check here also refused the session's
    own attempt to add the scope (`gh auth refresh -s workflow`), even after
-   Dan's yes; only Dan can run it.
+   Dan's yes. Dan typed the command in the session, the session started
+   it, and Dan approved the code at github.com/login/device; the scopes
+   now read 'gist', 'read:org', 'repo', 'workflow'.
 2. **This machine also has a safety check on `.claude/settings.json`.**
    The brief moved the session here because a cloud session refuses to
    write that file. Here, writing the hook went through, but writing the
@@ -180,9 +182,8 @@ copied from it gets both:
   folder, refuse `flyctl deploy` and `git push origin main`. The first
   session that opens a trusted app copied from the kit can try both and
   read the denial.
-- **This machine's GitHub sign-in needs the `workflow` scope** to add or
-  change workflow files; Dan adds it with `gh auth refresh -h github.com
-  -s workflow`.
+- **This machine's GitHub sign-in now carries the `workflow` scope**
+  (added 2 Oct 2026), so sessions here can add or change workflow files.
 - **This machine's safety check refuses** a session writing permission
   rules into `.claude/settings.json`, or changing its own GitHub sign-in,
   without Dan's word in the session; briefs that need either should say
