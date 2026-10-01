@@ -1,5 +1,6 @@
 # Rules for every Claude Code session on this app
 
+Read `SIGN.md` (what Dan's software shop is for) before changing anything.
 Read `README.md` and `PLAN.md` before changing anything. This app was made
 from `isleofdan/starting-kit`; these rules came with it and bind every
 session here.
