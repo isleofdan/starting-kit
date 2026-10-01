@@ -77,3 +77,15 @@
   where a machine has no browser; in GitHub Actions that is a failure.
 - **Next session needs:** see `docs/reports/kit-checks-one-report.md`,
   "What the next session needs".
+
+### the-sign-one — 1 Oct 2026
+
+- **Stands:** `SIGN.md` at the kit's root: Dan's one-page statement of
+  what his software shop is for, copied byte for byte from the brief on
+  the wall card `the-sign`. `README.md` and `CLAUDE.md` each gained one
+  line pointing to it. Because the copy step in `docs/NEW-APP.md` copies
+  the whole kit, every new app carries `SIGN.md` without further steps.
+- **Decided:** the sign is Dan's text and is never edited by a session;
+  apps that already exist pick it up only when Dan wants it there.
+- **Next session needs:** nothing from this one. See
+  `docs/reports/the-sign-one-report.md`.
