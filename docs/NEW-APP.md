@@ -26,7 +26,7 @@ writing.
 
 From the folder that holds your clone of the new repository (`proof-app`):
 
-    git clone --depth 1 https://github.com/isleofdan/starting-kit kit-copy
+    git clone --depth 1 --branch main https://github.com/isleofdan/starting-kit kit-copy
     rm -rf kit-copy/.git kit-copy/docs/SOURCES.md kit-copy/docs/NEW-APP.md kit-copy/docs/reports/screenshots
     find kit-copy/docs/reports -name '*-report.md' -delete
     cp -r kit-copy/. proof-app/

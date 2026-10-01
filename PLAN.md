@@ -30,3 +30,25 @@
 ## Close-out notes
 
 (Each session appends its own, in order.)
+
+### starting-kit-one — 2 Oct 2026
+
+- **Stands:** the kit, built and proven on a computer in a cloud session:
+  sign-in page (30-day cookie, spaces ignored, rate limited), sample screen,
+  status page with the alive line and the last outside error, 8 checks
+  passing, screenshots at 412×915 and 1280×800 signing in through the form,
+  the deploy and remove workflows (their proof steps run against a local
+  copy), and `docs/NEW-APP.md`, followed literally to make a working
+  `proof-app`. Not yet proven: the deploy on Fly (the first run after the
+  merge; the Docker image is first built there, as this sandbox has no
+  Docker daemon).
+- **Decided:** the shared stack of the three apps with no database and no
+  runtime dependencies; the app's name only in `app.json`; deploy by hand
+  only; one `shared-cpu-1x` 256 MB machine; `main` created on GitHub from a
+  one-file base commit, because the repository was empty and the work
+  branch could not be merged into a branch that did not exist.
+- **Next session needs:** the repository's default branch set to `main` and
+  the repository marked as a template (both are settings this cloud
+  session's proxy refuses: https://github.com/isleofdan/starting-kit/settings).
+  Until the default is `main`, `docs/NEW-APP.md` clones `--branch main`
+  explicitly.
