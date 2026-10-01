@@ -1,7 +1,7 @@
 'use strict';
 // One plain Node server, made from isleofdan/starting-kit.
-//   /login (GET, POST), /logout, /app.css   — open
-//   everything else                         — behind the passphrase cookie
+//   /login (GET, POST), /logout, /app.css, /alive  — open
+//   everything else (/, /status, an app's own)     — behind the passphrase cookie
 // Fail closed: with APP_PASSWORD or COOKIE_SECRET unset, only the sign-in
 // page serves, and it says the server is not configured.
 
@@ -11,8 +11,10 @@ const fs = require('node:fs');
 
 const app = require('./lib/app');
 const auth = require('./lib/auth');
+const upstream = require('./lib/upstream');
 const ratelimit = require('./lib/ratelimit');
-const { sendJson, sendHtml, redirect, readJson, serveStatic, escapeHtml } = require('./lib/http');
+const { execFileSync } = require('node:child_process');
+const { sendJson, sendHtml, sendText, redirect, readJson, serveStatic, escapeHtml } = require('./lib/http');
 
 const PORT = Number(process.env.PORT) || 8080;
 const PUBLIC = path.join(__dirname, 'public');
@@ -24,6 +26,14 @@ if (!CONFIGURED) {
   const missing = ['APP_PASSWORD', 'COOKIE_SECRET'].filter((k) => !process.env[k]);
   console.error(`not configured: ${missing.join(', ')} unset. Only the sign-in page will serve.`);
 }
+
+// When this copy started and which commit it runs. The deploy passes COMMIT;
+// on a computer it is read from git, if there is one.
+const STARTED = new Date();
+const COMMIT = (process.env.COMMIT || (() => {
+  try { return execFileSync('git', ['rev-parse', 'HEAD'], { cwd: __dirname, stdio: ['ignore', 'pipe', 'ignore'] }).toString(); } catch { return ''; }
+})()).trim().slice(0, 7) || 'unknown';
+const aliveLine = () => `alive since ${STARTED.toISOString().replace(/\.\d+Z$/, 'Z')} · ${COMMIT}`;
 
 const NOT_CONFIGURED = 'The server is not set up yet: APP_PASSWORD or COOKIE_SECRET is missing.';
 
@@ -79,6 +89,13 @@ function route(method, pattern, run) { routes.push({ method, pattern, run }); }
 
 route('GET', /^\/$/, (req, res) => sendHtml(res, 200, page('index.html')));
 
+route('GET', /^\/status$/, (req, res) => {
+  const { calls, lastError: e } = upstream.state();
+  const headline = e ? `${e.service} answered ${e.status ?? 'nothing'} at ${e.at.replace('T', ' ').replace(/\.\d+Z$/, ' UTC')}`
+    : calls ? `Nothing failed (${calls} calls so far).` : 'Nothing called yet.';
+  sendHtml(res, 200, page('status.html', { ALIVE: aliveLine(), UPSTREAM_HEADLINE: headline, UPSTREAM_DETAIL: e ? e.message : '' }));
+});
+
 // --- the server -------------------------------------------------------------
 
 const OPEN_FILES = new Set(['/app.css']);
@@ -87,6 +104,7 @@ async function handle(req, res) {
   const url = new URL(req.url, 'http://x');
   const p = url.pathname;
 
+  if (p === '/alive') return sendText(res, 200, aliveLine() + '\n');
   if (p === '/login' && req.method === 'GET') return loginPage(res, CONFIGURED ? 200 : 503, CONFIGURED ? '' : NOT_CONFIGURED, url.searchParams.get('next'));
   if (p === '/login' && req.method === 'POST') return handleLogin(req, res);
   if (p === '/logout') return redirect(res, '/login', { 'set-cookie': auth.clearCookie({ secure: SECURE_COOKIE }) });
