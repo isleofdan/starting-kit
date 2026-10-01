@@ -73,7 +73,9 @@ what the screens show. Nothing else in the kit carries the name.
 `npm test` ends with `# pass 8` and `# fail 0`. With the server running,
 open http://localhost:8080: you land on the sign-in page with the app's
 title. Type `try-me` and press **Sign in**: you see "This is Proof app".
-**Status** shows `alive since <time> · <commit>` and "Nothing called yet."
+**Status** shows `alive since <time> · <commit>` (the commit reads
+`unknown` until the new repository has its first commit) and "Nothing
+called yet."
 Stop the server, then:
 
     npm run screenshots
