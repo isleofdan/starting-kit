@@ -136,8 +136,10 @@ copied from it gets both:
    "node ${CLAUDE_PROJECT_DIR}/scripts/check.mjs --hook" … ✖ a wrong
    passphrase is refused and sets no cookie … AssertionError
    [ERR_ASSERTION]: 401 == 400".
-4. **"Checks" on the pull request branch:** see the second card note, and
-   the pull request.
+4. **"Checks" on the pull request branch: green**, before the merge ask:
+   `ok syntax (0.27 s)`, `ok tests (0.59 s)`, `ok screenshots (3.74 s)`,
+   `check: all passed: syntax, tests, screenshots`, 58 s in all.
+   https://github.com/isleofdan/starting-kit/actions/runs/36890406167
 5. **Claude Code loads the file without complaint.** Its debug log in the
    same run: "Adding 19 deny rule(s) to destination 'projectSettings':
    ["Bash(fly *)", …]" and "Adding 3 ask rule(s) …"; `claude doctor`: "No
@@ -164,9 +166,9 @@ copied from it gets both:
    https://code.claude.com/docs/en/permission-modes ("Protected paths"),
    and the installed tool: `claude --help`, `claude doctor`, the debug log.
    All fetched from this machine (`HTTP/2 200`).
-7. **Before the pull request:** see the pull request; `git status --short`
-   clean and `git log origin/kit-checks-one..HEAD` empty were checked
-   before opening it.
+7. **Before the pull request:** `git status --short` empty and
+   `git log origin/kit-checks-one..HEAD` empty. Pull request:
+   https://github.com/isleofdan/starting-kit/pull/2
 
 ## Asks
 
