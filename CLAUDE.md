@@ -65,6 +65,41 @@ schedules sessions by opening them.
 - "Remove the Fly app" is for a trial copy only. Never run it on an app
   that holds Dan's records unless Dan has asked for exactly that.
 
+## What an agent may and may not touch
+
+Claude Code enforces these from `.claude/settings.json` (`permissions`);
+this section says the same in words, with why. The line between them is
+the cost of a wrong move: who sees it, and what it costs to undo.
+
+- **May, without asking:** edit files in the app, run the checks (`npm
+  test`, `npm run …`, `node …`), commit, push its own branch, open a pull
+  request, read pull requests and workflow runs. A wrong move here is seen
+  by nobody until a pull request, and is undone by another commit.
+- **Asks Dan one yes/no first:** merging a pull request (`gh pr merge`),
+  starting a workflow (`gh workflow run`, which includes Deploy and Remove),
+  and any direct GitHub request (`gh api`). These reach what Dan sees, or
+  can change things a commit cannot undo. For reading runs and pull
+  requests, use `gh run view` and `gh pr view`, which need no asking.
+- **Never, from its own shell:**
+  - `fly` / `flyctl`: deploying and anything that costs money run only
+    through the Deploy workflow, after Dan's yes. This also keeps the app's
+    records on Fly out of a session's reach: a table holding Dan's data is
+    never dropped or rebuilt (see "Do not reverse").
+  - `npm publish`: nothing of Dan's is published; the app ships only
+    through Deploy.
+  - Pushing to `main`: push your own branch and open a pull request.
+  - Deleting a branch, here or on GitHub: leave it; Dan deletes branches.
+  - `gh secret`, `gh variable`, `gh repo edit`/`delete`/`rename`/`archive`:
+    repository secrets and settings are Dan's; ask him under **Needed from
+    you**, naming the setting and the value.
+- **This rule file itself** is a protected path in Claude Code: an agent
+  cannot change `.claude/settings.json` without a prompt, and any change
+  reaches `main` only through a pull request Dan says yes to.
+
+These rules stop the commands an agent normally types, not every way of
+spelling them (Claude Code's own permissions page says so). They bound
+mistakes; they are not a lock against someone determined.
+
 ## Cloud session limits
 
 Build on your own branch, open a pull request, ask Dan one yes/no to merge,

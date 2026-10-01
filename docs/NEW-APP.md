@@ -10,9 +10,13 @@ A plain Node server with no runtime dependencies: Dan's sign-in page
 (passphrase, 30-day cookie), one sample screen, a status page with the
 "alive since" line and the last outside error, checks (`npm test`), a
 screenshot run at phone and computer size that signs in through the form
-(`npm run screenshots`), a deploy workflow run by hand that creates the Fly
-app and proves it, a workflow that removes the Fly app, and the notes
-files with the rules every session follows (`CLAUDE.md`).
+(`npm run screenshots`), one command that runs every check in order
+(`npm run check`), checks that run by themselves after every edit an agent
+makes and on every push and pull request (`docs/CHECKS.md`), the rules for
+what an agent may and may not touch (`.claude/settings.json`, and in words
+in `CLAUDE.md`), a deploy workflow run by hand that creates the Fly app and
+proves it, a workflow that removes the Fly app, and the notes files with
+the rules every session follows (`CLAUDE.md`).
 
 ## 1. The new repository
 
@@ -38,9 +42,10 @@ The kit's own `.git` folder is removed before copying, so your clone keeps
 its own history.
 
 You should now have `app.json`, `server.js`, `lib/`, `public/`, `test/`,
-`scripts/`, `.github/workflows/deploy.yml`, `.github/workflows/remove.yml`,
-`Dockerfile`, `fly.toml`, `README.md`, `PLAN.md`, `CLAUDE.md` and
-`docs/reports/.gitkeep`.
+`scripts/`, `.claude/settings.json`, `.github/workflows/checks.yml`,
+`.github/workflows/deploy.yml`, `.github/workflows/remove.yml`,
+`Dockerfile`, `fly.toml`, `README.md`, `PLAN.md`, `CLAUDE.md`,
+`docs/CHECKS.md` and `docs/reports/.gitkeep`.
 
 ## 3. Name it, in one place
 
@@ -67,10 +72,12 @@ what the screens show. Nothing else in the kit carries the name.
 ## 5. Run it on this computer
 
     npm install
-    npm test
+    npm run check
     APP_PASSWORD=try-me COOKIE_SECRET=any-long-text npm run dev
 
-`npm test` ends with `# pass 8` and `# fail 0`. With the server running,
+`npm run check` ends with `check: all passed: syntax, tests, screenshots`
+(on a machine without Playwright's browser: `…; skipped screenshots (no
+browser on this machine; …)`, and the Checks workflow runs them). With the server running,
 open http://localhost:8080: you land on the sign-in page with the app's
 title. Type `try-me` and press **Sign in**: you see "This is Proof app".
 **Status** shows `alive since <time> · <commit>` (the commit reads
@@ -122,6 +129,33 @@ changes `APP_PASSWORD` in GitHub and the deploy is run again.
 To stop a trial copy costing: **Actions → Remove the Fly app → Run
 workflow**, typing `proof-app-dan` to confirm. Never on an app that holds
 Dan's records unless he asked for exactly that.
+
+## Checks and rules come with the copy
+
+A new app inherits both without doing anything: the after-every-edit hook
+and the permission rules in `.claude/settings.json`, the "Checks" workflow,
+and the section "What an agent may and may not touch" in `CLAUDE.md`. Its
+own tests go in `test/` and its own screens in `SCREENS` in
+`scripts/screenshots.mjs`; `npm run check` picks both up.
+
+**When the app has a real audience** (people other than Dan, or records
+Dan would miss), its session narrows the rules, in both copies at once
+(`.claude/settings.json` and the `CLAUDE.md` section), never just one:
+move `Bash(git push *)` from `allow` to `ask` if a pushed branch can reach
+others (for example when Deploy runs on every push to `main`); add
+`Bash(sqlite3 *)` to `deny` once the app keeps a database; and add any new
+paid service's command-line tool to `deny`, with its workflow named as the
+way to use it. Widening a rule is Dan's yes/no, asked under **Needed from
+you**.
+
+**An app made before the kit had these** adopts them in its next session:
+that session copies `scripts/check.mjs`, `.claude/settings.json`,
+`.github/workflows/checks.yml` and `docs/CHECKS.md` from the kit's `main`,
+adds the `check` line to `package.json`'s scripts and the `CLAUDE.md`
+section, then adjusts both copies of the rules to what the app has (its
+database, its audience, its paid services) as above. It times the checks
+on its own machine before keeping the after-every-edit hook, and lands it
+all through a pull request whose Checks run is green, like any other change.
 
 ## When the app keeps records
 
