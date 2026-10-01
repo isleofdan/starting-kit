@@ -6,6 +6,8 @@ const test = require('node:test');
 const assert = require('node:assert');
 const { spawn } = require('node:child_process');
 const path = require('node:path');
+const app = require('../lib/app');
+const { COOKIE } = require('../lib/auth');
 
 const PORT = 8911;
 const PASS = 'open sesame';
@@ -77,11 +79,11 @@ test('the right passphrase with spaces around it signs in for 30 days', async ()
   assert.match(html, /alive since .* · abcdef1/);
   assert.match(html, /Nothing called yet\./);
   const home = await fetch(`${base}/`, { headers: { cookie: jar } });
-  assert.match(await home.text(), /This is Starting kit/);
+  assert.match(await home.text(), new RegExp(`This is ${app.title}`));
 });
 
 test('a forged cookie is refused', async () => {
-  const r = await fetch(`${base}/status`, { redirect: 'manual', headers: { cookie: `starting_kit_auth=${Date.now() + 1e9}.deadbeef` } });
+  const r = await fetch(`${base}/status`, { redirect: 'manual', headers: { cookie: `${COOKIE}=${Date.now() + 1e9}.deadbeef` } });
   assert.equal(r.status, 303);
 });
 
