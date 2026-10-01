@@ -33,3 +33,10 @@ check is `node --check` on every `.js`, `.mjs` and `.cjs` file outside
 that runs `node scripts/check.mjs --hook`: syntax and tests only, the two
 checks that finished in about a second here. Measured as the hook runs it:
 1.17 s, 1.19 s, 1.20 s. Timeout 30 s.
+
+## On every push and pull request (step 4)
+
+The GitHub Actions workflow "Checks" (`.github/workflows/checks.yml`)
+installs Playwright's browser and runs the full `npm run check`, so the
+screenshots run there even where a machine has no browser. In Actions a
+missing browser is a failure, not a skip.
