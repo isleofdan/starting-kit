@@ -26,3 +26,10 @@ check is `node --check` on every `.js`, `.mjs` and `.cjs` file outside
 | syntax alone, inside it | 0.34 s, 0.38 s, 0.38 s |
 | tests alone, inside it | 0.61 s, 0.67 s, 0.68 s |
 | `npm run check -- --fast` (syntax and tests) | 1.34 s, 1.39 s, 1.67 s |
+
+## After every change (step 3)
+
+`.claude/settings.json` registers a `PostToolUse` hook on `Edit|Write`
+that runs `node scripts/check.mjs --hook`: syntax and tests only, the two
+checks that finished in about a second here. Measured as the hook runs it:
+1.17 s, 1.19 s, 1.20 s. Timeout 30 s.
