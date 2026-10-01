@@ -52,3 +52,28 @@
   session's proxy refuses: https://github.com/isleofdan/starting-kit/settings).
   Until the default is `main`, `docs/NEW-APP.md` clones `--branch main`
   explicitly.
+
+### kit-checks-one — 2 Oct 2026
+
+- **Stands:** checks and permission rules in the kit, so every app copied
+  from it gets both. `npm run check` runs syntax (`node --check`), tests
+  and screenshots in order and ends with a one-line verdict naming what
+  failed. Syntax and tests (about 1.2 s on the rented Linux machine) run by
+  themselves after every edit an agent makes (a Claude Code hook in
+  `.claude/settings.json`); everything runs on every push and pull request
+  (the "Checks" workflow). `.claude/settings.json` also holds the rules for
+  what an agent may and may not touch, and `CLAUDE.md` says the same in
+  words. `docs/CHECKS.md` says what runs when, with measured times.
+  `docs/NEW-APP.md` says a new app inherits both, which lines narrow for a
+  real audience, and how an older app adopts them. Proven on a scratch
+  `proof-app`: a broken test fails the check by name; the hook fired by
+  itself after an edit and showed the failure to the session; `flyctl
+  deploy` and `git push origin main` were refused.
+- **Decided:** the default rules: an agent may edit, run checks, commit,
+  push its own branch and open a pull request; it asks before merging,
+  starting a workflow, or a direct GitHub request; it never runs `fly`,
+  publishes to npm, pushes to `main`, deletes branches, or changes
+  repository secrets or settings. Screenshots are skipped, and said so,
+  where a machine has no browser; in GitHub Actions that is a failure.
+- **Next session needs:** see `docs/reports/kit-checks-one-report.md`,
+  "What the next session needs".

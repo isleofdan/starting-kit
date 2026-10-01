@@ -39,5 +39,8 @@ Where each piece came from: `docs/SOURCES.md`.
     APP_PASSWORD=try-me COOKIE_SECRET=any-long-text npm run dev
 
 Then open http://localhost:8080 and sign in with `try-me`.
-`npm test` runs the checks; `npm run screenshots` saves the screens at both
-sizes into `docs/reports/`.
+`npm run check` runs every check (`npm test`, then `npm run screenshots`,
+which saves the screens at both sizes into `docs/reports/`). They also run
+by themselves after every edit an agent makes and on every push and pull
+request: `docs/CHECKS.md`. What an agent may and may not touch:
+`CLAUDE.md`.
