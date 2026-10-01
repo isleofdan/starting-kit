@@ -46,6 +46,8 @@ You should now have `app.json`, `server.js`, `lib/`, `public/`, `test/`,
 `.github/workflows/deploy.yml`, `.github/workflows/remove.yml`,
 `Dockerfile`, `fly.toml`, `README.md`, `PLAN.md`, `CLAUDE.md`,
 `docs/CHECKS.md` and `docs/reports/.gitkeep`.
+You also have `ABOUT.md`, the one page that describes the app to a stranger under six fixed headings.
+Fill in `ABOUT.md` before the first deploy (step 7), following the line under each heading.
 
 ## 3. Name it, in one place
 
