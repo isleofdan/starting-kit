@@ -26,10 +26,13 @@ jobs:
         with:
           node-version: 22
 
+      # No --with-deps: the runner image already has what Chromium needs,
+      # and --with-deps fetched ~32 MB of extra fonts from Ubuntu's package
+      # mirror, which on some runners crawled for 5 to 10 minutes.
       - name: Install
         run: |
           npm ci --no-audit --no-fund
-          npx playwright install --with-deps chromium
+          npx playwright install chromium
 
       - name: Run every check
         run: npm run check
