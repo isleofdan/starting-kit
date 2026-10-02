@@ -89,3 +89,14 @@
   apps that already exist pick it up only when Dan wants it there.
 - **Next session needs:** nothing from this one. See
   `docs/reports/the-sign-one-report.md`.
+
+### checks-stall-one — 2 Oct 2026
+
+- **Stands:** the "Checks" workflow installs Chromium without
+  `--with-deps`; the first run on the branch was green in 21 s with all
+  three checks.
+- **Decided:** the stall was never about `main`: `--with-deps` downloaded
+  ~32 MB of fonts from Ubuntu's mirror, which crawled on some runners,
+  pull-request runs included. Dropped rather than cached.
+- **Next session needs:** see `docs/reports/checks-stall-one-report.md`
+  (the runner image moves to Ubuntu 26 from 19 Oct 2026).
