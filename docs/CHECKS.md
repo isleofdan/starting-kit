@@ -43,6 +43,13 @@ On the rented Linux machine (`agent-machine-dan`, Node 24.21.0), 2 Oct
 | `npm run check` (screenshots skipped here) | 1.57 s, 1.67 s, 1.67 s | by hand |
 | `npm run screenshots` | not measured here: this machine has no Playwright browser | workflow only |
 
+In the workflow the Install step downloads Chromium only (`npx playwright
+install chromium`, about 15 s); the runner image already has the libraries
+Chromium needs. It does not use `--with-deps`: that also fetches about
+32 MB of fonts from Ubuntu's package mirror, which on 1 Oct 2026 took from
+1 s to over 10 minutes for the same files and stalled the run. A whole
+run takes about a minute.
+
 ## Reading a failure
 
 - **In the session, after an edit:** the hook is silent when the checks
