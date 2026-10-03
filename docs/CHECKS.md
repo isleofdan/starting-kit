@@ -9,6 +9,7 @@ OpenRig team runs on 3 Oct 2026 finished in 23 to 25 seconds (runs
 [37121710156](https://github.com/isleofdan/starting-kit/actions/runs/37121710156),
 [37121711964](https://github.com/isleofdan/starting-kit/actions/runs/37121711964),
 [37123222228](https://github.com/isleofdan/starting-kit/actions/runs/37123222228)).
+The 3 Oct 2026 afternoon run used a fresh builder on the faster CPU.
 
 ## The checks
 
