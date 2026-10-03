@@ -5,6 +5,10 @@ read a failure. Added to the kit by kit-checks-one (2 Oct 2026).
 The Checks workflow finishes in about 25 seconds on main
 ([run 37118463557](https://github.com/isleofdan/starting-kit/actions/runs/37118463557),
 3 Oct 2026).
+OpenRig team runs on 3 Oct 2026 finished in 23 to 25 seconds (runs
+[37121710156](https://github.com/isleofdan/starting-kit/actions/runs/37121710156),
+[37121711964](https://github.com/isleofdan/starting-kit/actions/runs/37121711964),
+[37123222228](https://github.com/isleofdan/starting-kit/actions/runs/37123222228)).
 
 ## The checks
 
