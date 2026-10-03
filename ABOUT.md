@@ -18,3 +18,4 @@ Written <date> by a Claude Code session from the files in this folder; "Unknown"
 
 ## Which assistants can reach it
 <Which of Dan's assistants can reach the app (a Claude chat through a connector, a Claude Code session, Grokbot, ChatGPT, or none) and by what door, in plain words with the technical name in brackets; "None found in the files" is a valid answer.>
+An OpenRig team (Claude Code and Codex seats) on Dan's rented Linux machine can also work on a kit app under the kit's own rules (CLAUDE.md and .claude/settings.json), handed a job with one line such as: rig send "dev-owner@first-project-mixed" '<job>'.
