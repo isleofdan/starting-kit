@@ -2,6 +2,9 @@
 
 What checks the app has, when each runs, how long each takes, and how to
 read a failure. Added to the kit by kit-checks-one (2 Oct 2026).
+The Checks workflow finishes in about 25 seconds on main
+([run 37118463557](https://github.com/isleofdan/starting-kit/actions/runs/37118463557),
+3 Oct 2026).
 
 ## The checks
 
