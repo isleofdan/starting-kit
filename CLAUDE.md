@@ -107,6 +107,17 @@ Build on your own branch, open a pull request, ask Dan one yes/no to merge,
 and merge it yourself on yes. Do not push to `main` directly, delete any
 branch, or write `.claude/settings.json`.
 
+## The rented Linux machine and its OpenRig team
+
+On the rented Linux machine (`agent-machine-dan`) the OpenRig team (builder
+`dev-owner`, checker `dev-check`, rig `first-project-mixed`) is the default.
+Every brief either hands its change to the team or states in its first
+paragraph the reason it runs as plain Claude Code. The two reasons: (i) the
+job only reads or writes records (notes, cards, reports), with no code change
+for a checker to check; (ii) the job must survive the deploy-restart of that
+machine. For the procedure, follow the section "OpenRig team is the default"
+of `/data/home/dan/FACTS.md`.
+
 ## Do not reverse
 
 - **Records.** To add a field to a table that already holds the user's
