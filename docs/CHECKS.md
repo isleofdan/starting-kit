@@ -25,6 +25,11 @@ and ends with one line: `check: all passed: …`, or
 that does not parse, the test that failed, or the screenshot check that
 failed. `npm run check -- --fast` runs syntax and tests only.
 
+A check a session writes to prove something is committed, and the report
+names its file next to the count it produced ("25 checks,
+`scripts/review-check-test.mjs`"). A count from a check that was not
+committed is not a result.
+
 ## What runs when
 
 | When | What runs | Where it is set |
@@ -35,6 +40,10 @@ failed. `npm run check -- --fast` runs syntax and tests only.
 
 Only checks that finish in a few seconds run after every edit; the
 screenshots start a browser and run on push and pull request only.
+
+An app whose `npm test` takes more than 20 seconds puts a fast subset in
+`npm run test:fast` and points the hook at it; the full set runs in the
+Checks workflow. The hook's limit is 30 seconds.
 
 ## Measured times
 

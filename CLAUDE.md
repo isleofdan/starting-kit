@@ -38,6 +38,13 @@ results; numbered asks, each with a recommended answer; what the next
 session needs. It never asks when, or whether, the next session runs: Dan
 schedules sessions by opening them.
 
+When the session merges and deploys, the order is fixed: the change's pull
+request first (the report links it); after the deploy result, a notes-only
+close-out pull request carrying the field report and the `PLAN.md` note.
+That order is the rule, not a divergence. A brief's "nothing else changes"
+never covers the report and the `PLAN.md` note, and a count of changed
+files in a brief includes them.
+
 ## Building
 
 - **Gate.** The app's own sign-in page (`public/login.html`, `lib/auth.js`),
