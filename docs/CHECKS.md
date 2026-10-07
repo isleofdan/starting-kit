@@ -36,6 +36,10 @@ failed. `npm run check -- --fast` runs syntax and tests only.
 Only checks that finish in a few seconds run after every edit; the
 screenshots start a browser and run on push and pull request only.
 
+An app whose `npm test` takes more than 20 seconds puts a fast subset in
+`npm run test:fast` and points the hook at it; the full set runs in the
+Checks workflow. The hook's limit is 30 seconds.
+
 ## Measured times
 
 On the rented Linux machine (`agent-machine-dan`, Node 24.21.0), 2 Oct
