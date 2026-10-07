@@ -25,6 +25,11 @@ and ends with one line: `check: all passed: …`, or
 that does not parse, the test that failed, or the screenshot check that
 failed. `npm run check -- --fast` runs syntax and tests only.
 
+A check a session writes to prove something is committed, and the report
+names its file next to the count it produced ("25 checks,
+`scripts/review-check-test.mjs`"). A count from a check that was not
+committed is not a result.
+
 ## What runs when
 
 | When | What runs | Where it is set |
