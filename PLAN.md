@@ -100,3 +100,14 @@
   pull-request runs included. Dropped rather than cached.
 - **Next session needs:** see `docs/reports/checks-stall-one-report.md`
   (the runner image moves to Ubuntu 26 from 19 Oct 2026).
+
+### audit-kit-fixes — 7 Oct 2026
+
+- **Stands:** fixes 3, 14 and 15 of the production-system audit are in the
+  kit's rules and checks text: fix 3 in `CLAUDE.md` ("Field reports"),
+  fixes 14 and 15 in `docs/CHECKS.md` ("What runs when", "The checks"),
+  each copied word for word from the audit. They wait for the last-merge
+  session to merge the pull request.
+- **Decided:** one commit per fix; nothing else in the kit changed.
+- **Next session needs:** the pull request, which the supervising session
+  opens.
