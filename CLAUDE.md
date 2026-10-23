@@ -63,20 +63,23 @@ files in a brief includes them.
   `PLAN.md` (Dan's rule, 23 Oct 2026: "all web apps we create in all
   Claude projects [are] installable as Chrome phone apps by default,
   except when there's a reason they shouldn't be").
-- **One installed app per scope; scopes never nest by accident.** Chrome
-  on Android treats any page inside an installed app's `scope` as already
-  installed and offers only to open that app. So a site is one app with
-  `scope: '/'` (the kit's default), unless Dan asks for several icons from
-  one site; then each app's manifest has its own `id`, `start_url` and a
-  `scope` that is its own page path (`/home`, `/wall`), and only the page
-  that lives at `/` keeps `/`. Chrome picks the longest matching scope, so
-  the reply that tells Dan how to install says: the specific pages first,
-  the `/` one last. Changing an installed app's scope needs an uninstall
-  and reinstall on the phone; say so. The proof checks each manifest's
-  `scope` against its page, not only Chrome's installability verdict,
-  which passes either way. (Origin: Spine, 23 Oct 2026: every page's
-  manifest said `scope: '/'`; once Home was installed, Spine and Wall
-  only opened Home.)
+- **One site is one installed app; extra icons are shortcuts.** Chrome on
+  Android does not install several apps from one site side by side: after
+  the first installs, the others only offer to open it, whatever their
+  `id` and `scope` (web.dev, "Build multiple Progressive Web Apps on the
+  same domain": "the browser won't fully consider these to be distinct
+  apps"; recommended instead: separate origins). So every app has one
+  manifest, `id`, `start_url` and `scope` all `/`. When Dan wants a page
+  as its own icon, add it to the manifest's `shortcuts` (name, url, a 192
+  icon): a long press on the app icon lists them, and dragging one to the
+  home screen makes its own icon that opens the app at that page. A page
+  that must be a truly separate app goes on its own origin (its own Fly
+  app). Changing an installed app's manifest needs an uninstall and
+  reinstall on the phone; say so. Claims about how a browser installs or
+  matches apps come from a cited doc or a test on a phone, never from
+  memory. (Origin: Spine, 23 Oct 2026: one manifest per page, then one
+  scope per page; both times only the first page installed on Dan's
+  phone, two wasted rounds.)
 - **Proofs sign in through the form.** Any claim that a screen works is
   proven by a browser that types the passphrase into the sign-in page.
   Never pre-supply credentials (Playwright `httpCredentials`, injected
