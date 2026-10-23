@@ -118,3 +118,5 @@ Dan, 23 Oct 2026: "I want all web apps we create in all Claude projects to be in
 
 **Lesson added, same day (install scopes).** `CLAUDE.md` now says one installed app per scope: Chrome on Android treats a page inside an installed app's scope as already installed, so several apps from one site each get their own page as `scope`, only the page at `/` keeps `/`, and it is installed last. Origin: Spine pull requests #28 and #29. Dan: "Capture as a generic lesson to apply across all projects when making Chrome apps to install to prevent this problem."
 
+**Lesson corrected, same day.** The "one installed app per scope" rule above was wrong: separate scopes did not let a second page of Spine install on Dan's phone. `CLAUDE.md` now says one site is one installed app, extra icons are manifest `shortcuts`, a truly separate app needs its own origin, and browser-install claims come from a cited doc or a phone test, never memory.
+
