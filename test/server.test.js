@@ -91,3 +91,27 @@ test('a sign-in may only send the browser to a page on this site', async () => {
   const r = await fetch(`${base}/login`, form({ passphrase: PASS, next: '//evil.example/' }));
   assert.equal(r.headers.get('location'), '/');
 });
+
+test('installable on the phone: the manifest and its files answer signed out', async () => {
+  const want = { '/sw.js': /^text\/javascript/, '/install.js': /^text\/javascript/, '/icon-192.png': /^image\/png$/, '/icon-512.png': /^image\/png$/, '/manifest.webmanifest': /^application\/manifest\+json/ };
+  for (const [p, type] of Object.entries(want)) {
+    const r = await fetch(`${base}${p}`, { redirect: 'manual' });
+    assert.equal(r.status, 200, p);
+    assert.match(r.headers.get('content-type'), type, p);
+  }
+  const m = await (await fetch(`${base}/manifest.webmanifest`)).json();
+  assert.equal(m.name, app.title);
+  assert.equal(m.start_url, '/');
+  assert.equal(m.display, 'standalone');
+  assert.deepEqual(m.icons.map((i) => i.sizes), ['192x192', '512x512']);
+});
+
+test('installable on the phone: every screen links the manifest and the worker', async () => {
+  const signIn = await fetch(`${base}/login`, form({ passphrase: PASS, next: '/' }));
+  const cookie = signIn.headers.get('set-cookie').split(';')[0];
+  for (const p of ['/login', '/', '/status']) {
+    const html = await (await fetch(`${base}${p}`, { headers: { cookie } })).text();
+    assert.match(html, /<link rel="manifest" href="\/manifest\.webmanifest">/, p);
+    assert.match(html, /<script src="\/install\.js" defer><\/script>/, p);
+  }
+});

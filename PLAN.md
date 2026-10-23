@@ -111,3 +111,8 @@
 - **Decided:** one commit per fix; nothing else in the kit changed.
 - **Next session needs:** the pull request, which the supervising session
   opens.
+
+## Close-out: installable-by-default — 2026-10-23 (cloud, from the Personal Shipyard thread "Phone install for Spine and all web apps")
+
+Dan, 23 Oct 2026: "I want all web apps we create in all Claude projects to be installable as Chrome phone apps by default, except when there's a reason they shouldn't be made as such." The kit now carries it, so every app copied from it starts installable: `/manifest.webmanifest` (from `app.json`'s title, `id` and `start_url` `/`, standalone), `public/sw.js` (keeps nothing; the app is the live site), `public/install.js`, two placeholder icons; all five open without the cookie, as Chrome fetches them without it. Every screen carries the four head lines. Rule in `CLAUDE.md` (Building) and `docs/NEW-APP.md` step 3 (replace the icons). Pattern from isleofdan/kanji-study kanji-three. Proof: `npm test` 10 pass (two new); Chrome's `Page.getInstallabilityErrors` empty on `/` after signing in through the form, in a non-incognito profile. Report: `docs/reports/installable-by-default-report.md`.
+

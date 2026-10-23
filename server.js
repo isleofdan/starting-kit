@@ -1,6 +1,8 @@
 'use strict';
 // One plain Node server, made from isleofdan/starting-kit.
 //   /login (GET, POST), /logout, /app.css, /alive  — open
+//   /manifest.webmanifest, /sw.js, /install.js,
+//   /icon-192.png, /icon-512.png                   — open (installing on the phone)
 //   everything else (/, /status, an app's own)     — behind the passphrase cookie
 // Fail closed: with APP_PASSWORD or COOKIE_SECRET unset, only the sign-in
 // page serves, and it says the server is not configured.
@@ -98,7 +100,29 @@ route('GET', /^\/status$/, (req, res) => {
 
 // --- the server -------------------------------------------------------------
 
-const OPEN_FILES = new Set(['/app.css']);
+// Installable on the phone by default (Dan, 23 Oct 2026: every web app
+// installs as a Chrome phone app unless there is a reason it shouldn't).
+// Chrome fetches the manifest and the icons without the cookie, and none of
+// these files holds anything of Dan's, so they are open like the stylesheet.
+const OPEN_FILES = new Set(['/app.css', '/sw.js', '/install.js', '/icon-192.png', '/icon-512.png']);
+
+// The manifest, named from app.json like everything else.
+function manifest() {
+  return {
+    id: '/',
+    name: app.title,
+    short_name: app.title.length > 12 ? app.title.slice(0, 12).trimEnd() : app.title,
+    start_url: '/',
+    scope: '/',
+    display: 'standalone',
+    background_color: '#fafaf8',
+    theme_color: '#2f6f4f',
+    icons: [
+      { src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+    ],
+  };
+}
 
 async function handle(req, res) {
   const url = new URL(req.url, 'http://x');
@@ -108,6 +132,7 @@ async function handle(req, res) {
   if (p === '/login' && req.method === 'GET') return loginPage(res, CONFIGURED ? 200 : 503, CONFIGURED ? '' : NOT_CONFIGURED, url.searchParams.get('next'));
   if (p === '/login' && req.method === 'POST') return handleLogin(req, res);
   if (p === '/logout') return redirect(res, '/login', { 'set-cookie': auth.clearCookie({ secure: SECURE_COOKIE }) });
+  if (req.method === 'GET' && p === '/manifest.webmanifest') return sendJson(res, 200, manifest(), { 'content-type': 'application/manifest+json; charset=utf-8' });
   if (req.method === 'GET' && OPEN_FILES.has(p) && serveStatic(res, PUBLIC, p)) return;
 
   if (!CONFIGURED || !auth.cookieOk(req, COOKIE_SECRET)) {
