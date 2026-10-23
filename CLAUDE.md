@@ -49,8 +49,20 @@ files in a brief includes them.
 
 - **Gate.** The app's own sign-in page (`public/login.html`, `lib/auth.js`),
   never the browser's username-and-password box: phone in-app browsers
-  never show it. Every route except `/login`, `/logout`, `/app.css` and
-  `/alive` stays behind the cookie.
+  never show it. Every route except `/login`, `/logout`, `/app.css`,
+  `/alive` and the five install files below stays behind the cookie.
+- **Installable on the phone, by default.** Every screen links
+  `/manifest.webmanifest`, the theme color, the icon and `/install.js`, so
+  Chrome on Dan's phone offers **Install app** and the app opens full
+  screen from its own icon. The manifest (named from `app.json`),
+  `/sw.js`, `/install.js`, `/icon-192.png` and `/icon-512.png` are open,
+  because Chrome fetches them without the cookie. A new screen copies the
+  four head lines from `public/index.html`; a new app replaces the two
+  icons with its own. The service worker keeps nothing: the app is the
+  live site. Dropping this needs a stated reason in the brief and in
+  `PLAN.md` (Dan's rule, 23 Oct 2026: "all web apps we create in all
+  Claude projects [are] installable as Chrome phone apps by default,
+  except when there's a reason they shouldn't be").
 - **Proofs sign in through the form.** Any claim that a screen works is
   proven by a browser that types the passphrase into the sign-in page.
   Never pre-supply credentials (Playwright `httpCredentials`, injected

@@ -7,7 +7,9 @@ is called `proof-app`; use your app's name wherever that appears.
 ## What you get
 
 A plain Node server with no runtime dependencies: Dan's sign-in page
-(passphrase, 30-day cookie), one sample screen, a status page with the
+(passphrase, 30-day cookie), one sample screen, installable on the phone
+as an app (Chrome's **Install app**; manifest named from `app.json`, a
+service worker that keeps nothing, two icons), a status page with the
 "alive since" line and the last outside error, checks (`npm test`), a
 screenshot run at phone and computer size that signs in through the form
 (`npm run screenshots`), one command that runs every check in order
@@ -61,6 +63,13 @@ Edit `app.json`:
 `name` is lowercase letters, digits and hyphens; the Fly app becomes
 `proof-app-dan` and the site `https://proof-app-dan.fly.dev`. `title` is
 what the screens show. Nothing else in the kit carries the name.
+
+Replace `public/icon-192.png` and `public/icon-512.png` with the app's own
+icon (PNG, square, the mark inside the middle 60% so Android's rounded
+mask does not cut it), and set `theme_color` in `server.js`'s `manifest()`
+and the `theme-color` line in each screen to the app's accent. The app
+stays installable on the phone: that is the default for every app of
+Dan's, dropped only for a reason stated in the brief and in `PLAN.md`.
 
 ## 4. Make the notes the app's own
 
