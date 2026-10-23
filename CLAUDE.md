@@ -63,6 +63,20 @@ files in a brief includes them.
   `PLAN.md` (Dan's rule, 23 Oct 2026: "all web apps we create in all
   Claude projects [are] installable as Chrome phone apps by default,
   except when there's a reason they shouldn't be").
+- **One installed app per scope; scopes never nest by accident.** Chrome
+  on Android treats any page inside an installed app's `scope` as already
+  installed and offers only to open that app. So a site is one app with
+  `scope: '/'` (the kit's default), unless Dan asks for several icons from
+  one site; then each app's manifest has its own `id`, `start_url` and a
+  `scope` that is its own page path (`/home`, `/wall`), and only the page
+  that lives at `/` keeps `/`. Chrome picks the longest matching scope, so
+  the reply that tells Dan how to install says: the specific pages first,
+  the `/` one last. Changing an installed app's scope needs an uninstall
+  and reinstall on the phone; say so. The proof checks each manifest's
+  `scope` against its page, not only Chrome's installability verdict,
+  which passes either way. (Origin: Spine, 23 Oct 2026: every page's
+  manifest said `scope: '/'`; once Home was installed, Spine and Wall
+  only opened Home.)
 - **Proofs sign in through the form.** Any claim that a screen works is
   proven by a browser that types the passphrase into the sign-in page.
   Never pre-supply credentials (Playwright `httpCredentials`, injected
