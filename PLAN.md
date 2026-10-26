@@ -122,3 +122,7 @@ Dan, 23 Oct 2026: "I want all web apps we create in all Claude projects to be in
 
 **Lesson corrected, same day.** The "one installed app per scope" rule above was wrong: separate scopes did not let a second page of Spine install on Dan's phone. `CLAUDE.md` now says one site is one installed app, extra icons are manifest `shortcuts`, a truly separate app needs its own origin, and browser-install claims come from a cited doc or a phone test, never memory.
 
+
+## Close-out: kit-crash-one — 2026-10-26 (agent-machine-dan, OpenRig team, from the Personal Shipyard toolkit thread)
+
+Every app made from the kit now reports its own crashes to Sentry, switched on only by a `SENTRY_DSN` in `fly.toml` (empty in the kit, so the kit and `npm test` send nothing); Sentry calls the Spine, which files one Wall card per issue. Server: `lib/crash.js`; browser: committed `public/sentry.min.js` plus `public/crash.js`; test route `POST /crash-test`; deploy step "Check a crash reaches Sentry". **Decided:** the scrub is a keep-list (only the error, how it was caught and its code location leave the app), with Sentry 11's `dataCollection` off and six gathering integrations skipped, because the checker found the reader's recipe sending five source lines per frame and machine data. The two Sentry packages are the kit's only runtime dependencies. Tests 10 → 21. **Next session needs:** this pull request merged; the first app made from the kit follows `docs/NEW-APP.md` step 4 for its DSN. Report: `docs/reports/kit-crash-one-report.md`.
