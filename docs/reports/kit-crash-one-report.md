@@ -56,6 +56,12 @@ There is nothing for Dan to see yet. The kit is a template and its trial copy is
   - the committed bundle matches a fresh build.
 - Not verified here: a real delivery to Sentry, a Wall card, a Fly deploy, a Docker build, a phone, the shutdown flush path.
 
+## Checks
+1. Brief check: job `20261026-023422-bf6622`, PASS (card `crash-reporting`, before this session started).
+2. Team check, round 1: `qitem-20261026043030-2cb79cb9` on candidate `ed5d85c`, FINDINGS ("Independent QA: ed5d85c — FINDINGS"). It found source lines around each frame and machine, locale and module data leaving the app. Changed in `82daeae`: the keep-list scrub, `dataCollection` off, six integrations skipped, and new transport-level tests (20 → 21 tests).
+3. Team check, round 2: `qitem-20261026044200-9d53372f` on candidate `82daeae`, PASS ("Independent recheck: 82daeae — PASS").
+4. Result check: run after this report is filed; its verdict is recorded on the card and in the pull request's closing comment.
+
 ## Asks for the origin chat
 1. **Fix the same leak in the Hebrew reader and the Spine?** Both use the recipe that check round 1 found sending five source lines per frame, plus machine, locale and module data. Recommended: yes. Give each app one machine session that copies the kit's `public/crash.js` (the keep-list, `dataCollection` off, the skipped integrations) and proves it with the checker's local probe. The kit's version is the model.
 
