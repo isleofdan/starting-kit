@@ -6,8 +6,10 @@ is called `proof-app`; use your app's name wherever that appears.
 
 ## What you get
 
-A plain Node server with no runtime dependencies: Dan's sign-in page
-(passphrase, 30-day cookie), one sample screen, installable on the phone
+A plain Node server whose only runtime dependencies are the two Sentry
+packages (`@sentry/node`, `@sentry/browser`): Dan's sign-in page
+(passphrase, 30-day cookie), one sample screen, crash reports to Sentry
+(off until the app's DSN is in `fly.toml`; step 4), installable on the phone
 as an app (Chrome's **Install app**; manifest named from `app.json`, a
 service worker that keeps nothing, two icons), a status page with the
 "alive since" line and the last outside error, checks (`npm test`), a
@@ -49,7 +51,7 @@ You should now have `app.json`, `server.js`, `lib/`, `public/`, `test/`,
 `Dockerfile`, `fly.toml`, `README.md`, `PLAN.md`, `CLAUDE.md`,
 `docs/CHECKS.md` and `docs/reports/.gitkeep`.
 You also have `ABOUT.md`, the one page that describes the app to a stranger under six fixed headings.
-Fill in `ABOUT.md` before the first deploy (step 7), following the line under each heading.
+Fill in `ABOUT.md` before the first deploy (step 8), following the line under each heading.
 
 ## 3. Name it, in one place
 
@@ -71,7 +73,46 @@ and the `theme-color` line in each screen to the app's accent. The app
 stays installable on the phone: that is the default for every app of
 Dan's, dropped only for a reason stated in the brief and in `PLAN.md`.
 
-## 4. Make the notes the app's own
+## 4. Crash reporting
+
+The app reports its unexpected errors to Sentry once its DSN is in
+`fly.toml` (`README.md`, "Crash reports"). One Sentry project per app.
+
+**Dan, in Chrome on his Windows computer:**
+
+1. He opens https://shulman-advisory.sentry.io/projects/new/. He sees
+   the heading **Choose your platform**, with a tile per platform.
+2. Under **Choose your platform** he clicks the tile **Node.js**.
+3. In the field **Project name** he types the app's name exactly as
+   `app.json` spells it (for example `proof-app`).
+4. In the **Team** box he leaves `#shulman-advisory` as it is.
+5. He clicks **Create Project**. Sentry shows the page **Configure Node.js
+   SDK**, with code to copy. He taps nothing on it and closes the tab: the
+   session writes the configuration.
+
+Nothing else in Sentry needs changing: the Sentry integration that calls
+the Spine (one Wall card per issue) is one for the whole organisation and
+is already in place.
+
+**Then the session** (it never prints the token):
+
+1. `test -f /data/home/dan/.config/sentry/auth-token` succeeds. (The token
+   was placed there through the Spine secrets page.)
+2. `GET https://sentry.io/api/0/projects/shulman-advisory/<app>/keys/`,
+   with the token as `Authorization: Bearer <token>`, answers 200 (and
+   only 200 counts), with `<app>` the name in `app.json`.
+3. `dsn.public` of the active key (`isActive: true`) goes into `fly.toml`
+   `[env]` as `SENTRY_DSN = "<dsn.public>"`, replacing the empty value.
+
+If the file is missing, or the call answers anything but 200, the session
+says exactly what answered (the status and Sentry's message) and asks the
+origin thread, never Dan in the session.
+
+After the first deploy (step 8), the step "Check a crash reaches Sentry"
+prints `crash-test: 500`, and a card for
+`Error: crash-test: this app reports crashes` reaches Dan's Wall.
+
+## 5. Make the notes the app's own
 
 - `README.md`: replace the kit's text with what this app is, for a
   stranger. Keep the "Running it on a computer" section.
@@ -80,7 +121,7 @@ Dan's, dropped only for a reason stated in the brief and in `PLAN.md`.
   that still hold.
 - `CLAUDE.md`: keep it as it is; add the app's own rules below it.
 
-## 5. Run it on this computer
+## 6. Run it on this computer
 
     npm install
     npm run check
@@ -102,7 +143,7 @@ It ends with `all checks passed` and saves six images into
 `docs/reports/screenshots/` (sign-in, sample, status, each at phone and
 computer size). Commit.
 
-## 6. The two secrets Dan adds
+## 7. The two secrets Dan adds
 
 On GitHub, in the new repository: **Settings → Secrets and variables →
 Actions → New repository secret**, twice:
@@ -116,7 +157,7 @@ Actions → New repository secret**, twice:
 nobody adds it. Your session cannot read the secrets: the deploy's step
 "Refuse to run without the secrets" is the check.
 
-## 7. Deploy once
+## 8. Deploy once
 
 After the pull request is merged into `main`: **Actions → Deploy → Run
 workflow** on `main` (or the GitHub tool's "run workflow" with
@@ -132,6 +173,8 @@ workflow** on `main` (or the GitHub tool's "run workflow" with
     sign-in form: HTTP 303
     cookie: proof_app_auth, expires <30 days from now>
     signed in: yes (sample screen: HTTP 200, "This is Proof app")
+    sign-in form: HTTP 303
+    crash-test: 500
 
 On later runs the second and fourth lines read "App proof-app-dan exists."
 and "COOKIE_SECRET already set; leaving it." To change the passphrase, Dan
@@ -175,12 +218,10 @@ Do it the way the three apps (`isleofdan/miwa-english`,
 
 - `npm install better-sqlite3`; open one database file under
   `process.env.DATA_DIR` (`/data` on Fly, `./var` on a computer).
-- `Dockerfile`: before `COPY . .`, add
+- `Dockerfile`: before `COPY package.json package-lock.json ./`, add
 
       RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ ca-certificates \
           && rm -rf /var/lib/apt/lists/*
-      COPY package.json package-lock.json ./
-      RUN npm ci --omit=dev
 
   and `ENV DATA_DIR=/data`.
 - `fly.toml`: raise `memory` to `"512mb"` and add

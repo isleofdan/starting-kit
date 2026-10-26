@@ -30,6 +30,62 @@ Behind that, for the Claude Code sessions that build apps:
   session), `CLAUDE.md` (the rules every session on the app follows), and
   `docs/reports/` (one field report per session).
 
+## Routes
+
+- `/login` (the sign-in page and its form), `/logout`, `/alive` (the alive
+  line, plain text), `/app.css`: open.
+- `/manifest.webmanifest`, `/sw.js`, `/install.js`, `/icon-192.png`,
+  `/icon-512.png`: open, because Chrome fetches them without the cookie to
+  install the app on the phone.
+- `/sentry.min.js`, `/crash.js`: open, because the sign-in page loads them
+  too (crash reporting, below).
+- `/` (the sample screen), `/status` (the status page): behind the cookie,
+  like every route an app adds.
+- `POST /crash-test`: behind the cookie. It throws
+  `Error('crash-test: this app reports crashes')`, which the server reports
+  like any unexpected error and answers 500. Signed out it sends the
+  browser to the sign-in page (303). The deploy calls it.
+
+## Crash reports
+
+Every app made from the kit reports its unexpected errors to Sentry: a
+server error that answers 500, and an error thrown in a page.
+Only the error and where in the code it happened leave the app: the
+error's type and message, how it was caught, and its stack frames with
+file, function, line and column. The same rule runs on the server and in
+the page (`public/crash.js`, which `lib/crash.js` also uses), and it keeps
+a short list rather than removing a few things: an event keeps its id,
+time, level, platform, environment, the SDK's name and version, and those
+exceptions; everything else is dropped. (After the scrub, Sentry's SDK adds
+its own package and integration names, the IP setting below, and a trace
+id: protocol details, nothing about Dan or the machine.) So nothing is sent of the request
+(address, query, headers, cookie, body), the user or the IP address (the
+page tells Sentry not to record it), the transaction name, extra data,
+tags, the server's name, the machine, operating system, device, locale or
+time zone, the installed modules, the source lines around each frame, local
+variables, the breadcrumbs that carry addresses, logs or page text (http,
+fetch, xhr, console, navigation, ui.*), or the query and fragment of any
+address in a stack frame. Sentry 11 gathers most of that by default
+whatever `sendDefaultPii` says, so `public/crash.js` also turns off its
+`dataCollection` options and the integrations that gather source lines,
+variables, contexts and modules. Two limits: an error's own message is
+sent as written, so code should not put what Dan typed into one; and a
+page's report travels as an ordinary request from his browser, which tells
+Sentry the app's address and the browser's name, as any request to another
+site does. Reporting is on only when the environment
+variable `SENTRY_DSN` is set; the server then writes it into every page as
+`<meta name="sentry-dsn">`. The DSN is public by Sentry's design: it only
+lets anyone send new events
+(https://docs.sentry.io/concepts/key-terms/dsn-explainer/). In the kit it
+is empty (`fly.toml`, `[env]`), so the kit, `npm test` and a local run send
+nothing. A new app's session puts the app's own DSN there
+(`docs/NEW-APP.md`, "Crash reporting"). The deploy then signs in and calls
+`POST /crash-test` to prove the chain; each Sentry issue becomes a card on
+Dan's Wall in the Spine (Sentry's alert calls the Spine). The browser part
+is Sentry's own SDK, built into one file served from the app
+(`public/sentry.min.js`, `npm run build`, committed), so a page loads
+scripts only from its own site.
+
 How to start a new app from the kit: `docs/NEW-APP.md`.
 Where each piece came from: `docs/SOURCES.md`.
 What the shop is for: `SIGN.md`, copied into every app unchanged.

@@ -16,7 +16,7 @@ The 3 Oct 2026 afternoon run used a fresh builder on the faster CPU.
 | Check | What it proves |
 | - | - |
 | syntax | Every `.js`, `.mjs` and `.cjs` file outside `node_modules` parses (`node --check`, file by file). |
-| tests | `npm test`: the gate, the alive line, the status page and `lib/upstream.js`, against a real server (8 tests in the kit). |
+| tests | `npm test`: the gate, the alive line, the status page, `lib/upstream.js` and crash reporting (`test/crash.test.js`: off with no DSN, the scrub and its keep-list, Sentry's settings, the pages, the committed bundle, `POST /crash-test`, what a crash sends to a stand-in for Sentry, the deploy step), against a real server (21 tests in the kit: 10 before crash reporting, 11 added by kit-crash-one, 26 Oct 2026). |
 | screenshots | `npm run screenshots`: every screen at phone (412×915) and computer (1280×800) size, signing in through the form, with no sideways scrolling (16 checks in the kit). Needs Playwright's browser. |
 
 `npm run check` runs all three in that order, stops at the first failure,

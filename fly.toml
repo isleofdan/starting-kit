@@ -10,6 +10,9 @@ primary_region = "nrt"   # Tokyo
 
 [env]
   PORT = "8080"
+  # Crash reporting (lib/crash.js, public/crash.js): a new app's DSN goes here; it is public by Sentry's design (https://docs.sentry.io/concepts/key-terms/dsn-explainer/).
+  # Empty means no reporting: nothing is loaded and nothing is sent.
+  SENTRY_DSN = ""
 
 [http_service]
   internal_port = 8080
