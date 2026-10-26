@@ -56,7 +56,9 @@ file, function, line and column. The same rule runs on the server and in
 the page (`public/crash.js`, which `lib/crash.js` also uses), and it keeps
 a short list rather than removing a few things: an event keeps its id,
 time, level, platform, environment, the SDK's name and version, and those
-exceptions; everything else is dropped. So nothing is sent of the request
+exceptions; everything else is dropped. (After the scrub, Sentry's SDK adds
+its own package and integration names, the IP setting below, and a trace
+id: protocol details, nothing about Dan or the machine.) So nothing is sent of the request
 (address, query, headers, cookie, body), the user or the IP address (the
 page tells Sentry not to record it), the transaction name, extra data,
 tags, the server's name, the machine, operating system, device, locale or
