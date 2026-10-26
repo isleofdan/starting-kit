@@ -47,7 +47,7 @@ There is nothing for Dan to see yet. The kit is a template and its trial copy is
 - The checker's round 2 ran `npm test` (21 passed, 0 failed) and two local probes; both used a stand-in collector on 127.0.0.1:8958 and sent nothing to Sentry.
   - The server probe signed in through the form and posted to `/crash-test`. The event had no contexts and no module list. The `server.js` frame held only filename, module, function, line number, column and in_app, with no source lines or variables.
   - The browser probe ran Chromium, typed the passphrase into the sign-in form, then threw a deliberate error. The event had no contexts, no private query or fragment, no console text, and `infer_ip` was "never".
-- Each item 6 test is in `test/crash.test.js` (15 tests), one per point:
+- The item 6 tests are the 11 tests added in `test/crash.test.js` (10 before + 11 = 21), covering each point:
   - off with no DSN;
   - the scrub's dropped fields and breadcrumbs;
   - pages load the two scripts in order;
@@ -60,7 +60,15 @@ There is nothing for Dan to see yet. The kit is a template and its trial copy is
 1. Brief check: job `20261026-023422-bf6622`, PASS (card `crash-reporting`, before this session started).
 2. Team check, round 1: `qitem-20261026043030-2cb79cb9` on candidate `ed5d85c`, FINDINGS ("Independent QA: ed5d85c — FINDINGS"). It found source lines around each frame and machine, locale and module data leaving the app. Changed in `82daeae`: the keep-list scrub, `dataCollection` off, six integrations skipped, and new transport-level tests (20 → 21 tests).
 3. Team check, round 2: `qitem-20261026044200-9d53372f` on candidate `82daeae`, PASS ("Independent recheck: 82daeae — PASS").
-4. Result check: run after this report is filed; its verdict is recorded on the card and in the pull request's closing comment.
+4. Result check, round 1: job `20261026-045221-c04f9b`, FINDINGS. (1) This report said `test/crash.test.js` holds 15 tests; it holds 11, now corrected. (2) No card-filing outcome; now in "Close-out done". (3) No closing pull-request comment; posted and recorded in "Close-out done".
+5. Result check, round 2: the verdict on this version goes in the closing message to Dan and on the card.
+
+## Close-out done
+- Card `crash-reporting` filed with `file_thread` as `session:kit-crash-one`: state live, court dan. Event 2156, kind "handed" (from claude-code to dan). The note begins "What stands" and carries the three sections verbatim. The doors are the ten earlier ones plus `field report (kit-crash-one)` and `pull request (kit-crash-one)`. Read back with `get_thread`: the newest event is 2156, handed, by `session:kit-crash-one`; the last two doors are those two labels; the court is dan.
+- Pull request comments:
+  - `BLOCKED` at https://github.com/isleofdan/starting-kit/pull/15#issuecomment-6408487157
+  - `FINISHED` at https://github.com/isleofdan/starting-kit/pull/15#issuecomment-6408528807
+- `/data/home/dan/FACTS.md` updated with this session's snapshot line (see lesson 5).
 
 ## Asks for the origin chat
 1. **Fix the same leak in the Hebrew reader and the Spine?** Both use the recipe that check round 1 found sending five source lines per frame, plus machine, locale and module data. Recommended: yes. Give each app one machine session that copies the kit's `public/crash.js` (the keep-list, `dataCollection` off, the skipped integrations) and proves it with the checker's local probe. The kit's version is the model.
