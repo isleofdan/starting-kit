@@ -90,7 +90,26 @@ test('the scrub strips the query and fragment from stack frame paths, keeping fi
   const [f0, f1] = out.exception.values[0].stacktrace.frames;
   assert.deepEqual(f0, { filename: 'https://proof-app-dan.fly.dev/index.html', abs_path: 'https://proof-app-dan.fly.dev/notes', module: 'notes', lineno: 92, colno: 7, function: 'go' });
   assert.deepEqual(f1, { filename: '/app/server.js', lineno: 600, colno: 3 });
-  assert.equal(out.threads.values[0].stacktrace.frames[0].filename, 'https://proof-app-dan.fly.dev/status');
+  assert.ok(!('threads' in out), 'threads are dropped');
+});
+
+test('the scrub keeps only its short list: no source lines, local variables, contexts, modules, tags or other fields', () => {
+  const out = page.scrub({
+    event_id: 'e2', timestamp: 1, level: 'error', platform: 'node', environment: 'production', release: 'r1',
+    sdk: { name: 'sentry.javascript.node', version: '11', integrations: ['ContextLines'], packages: [{ name: 'npm:@sentry/node' }] },
+    contexts: { os: { name: 'Linux' }, device: { memory_size: 1 }, culture: { timezone: 'Asia/Tokyo' }, app: { app_start_time: 'x' } },
+    modules: { '@sentry/node': '11' }, tags: { note: 'private' }, fingerprint: ['x'], logentry: { message: 'private' },
+    exception: { values: [{ type: 'Error', value: 'boom', module: 'm', thread_id: 1,
+      mechanism: { type: 'generic', handled: true, data: { private: 'x' } },
+      stacktrace: { frames: [{ filename: '/app/server.js', function: 'go', lineno: 9, colno: 2, in_app: true,
+        pre_context: ['const secret = "private-source";'], context_line: 'throw e', post_context: ['}'], vars: { note: 'private-var' }, instruction_addr: '0x1' }] } }] },
+  });
+  assert.deepEqual(out, {
+    event_id: 'e2', timestamp: 1, level: 'error', platform: 'node', environment: 'production', release: 'r1',
+    sdk: { name: 'sentry.javascript.node', version: '11' },
+    exception: { values: [{ type: 'Error', value: 'boom', mechanism: { type: 'generic', handled: true },
+      stacktrace: { frames: [{ filename: '/app/server.js', function: 'go', lineno: 9, colno: 2, in_app: true }] } }] },
+  });
 });
 
 test('both sides pass Sentry.init the same settings: production, no personal data, no server name, no tracing, no replay, the scrub', () => {
@@ -102,6 +121,17 @@ test('both sides pass Sentry.init the same settings: production, no personal dat
   assert.equal(S.replaysSessionSampleRate, 0);
   assert.equal(S.replaysOnErrorSampleRate, 0);
   assert.equal(S.beforeSend, page.scrub);
+  assert.equal(S.includeLocalVariables, false);
+  assert.deepEqual(S.dataCollection, {
+    userInfo: false, cookies: false, httpHeaders: false, httpBodies: [], urlQueryParams: false,
+    graphQL: { document: false, variables: false }, genAI: { inputs: false, outputs: false }, mcp: { inputs: false, outputs: false },
+    databaseQueryData: false, queues: false, stackFrameVariables: false, frameContextLines: 0,
+  }, 'Sentry 11 gathers all of these unless told not to');
+  // every option Sentry 11 knows is set, so a new default that gathers more shows up here
+  const { resolveDataCollectionOptions } = require(path.join(root, 'node_modules', '@sentry', 'core', 'build', 'cjs', 'utils', 'data-collection', 'resolveDataCollectionOptions.js'));
+  assert.deepEqual(Object.keys(resolveDataCollectionOptions({})).sort(), Object.keys(S.dataCollection).sort());
+  const kept = S.integrations(['ContextLines', 'LocalVariables', 'LocalVariablesAsync', 'Context', 'CultureContext', 'Modules', 'Dedupe', 'LinkedErrors'].map((name) => ({ name })));
+  assert.deepEqual(kept.map((i) => i.name), ['Dedupe', 'LinkedErrors'], 'the integrations that gather source, variables, contexts and modules are skipped');
 });
 
 test('in a page, crash.js starts Sentry only when the page carries a DSN and the bundle', () => {
@@ -206,8 +236,13 @@ test('with a DSN, pages carry it, and a crash reaches Sentry with its message an
   assert.equal(ex.value, 'crash-test: this app reports crashes');
   assert.ok(ex.stacktrace.frames.some((f) => /server\.js$/.test(f.filename || '')), 'a frame in server.js');
   assert.equal(item.environment, 'production');
-  for (const k of ['request', 'user', 'transaction', 'extra', 'server_name']) assert.ok(!(k in item), k);
+  for (const k of ['request', 'user', 'transaction', 'extra', 'server_name', 'contexts', 'modules', 'tags', 'threads']) assert.ok(!(k in item), k);
+  for (const k of Object.keys(item)) assert.ok(['event_id', 'timestamp', 'level', 'platform', 'environment', 'release', 'sdk', 'exception', 'breadcrumbs'].includes(k), `sent: ${k}`);
+  for (const f of ex.stacktrace.frames) for (const k of Object.keys(f)) assert.ok(['filename', 'abs_path', 'module', 'function', 'lineno', 'colno', 'in_app'].includes(k), `a frame sent ${k}`);
   const text = envelopes.join('\n');
+  // a line of server.js just above the throw: source context would carry it
+  assert.ok(!text.includes('crash reaches Sentry'), 'source lines were sent');
+  for (const s of ['pre_context', 'context_line', 'post_context', '"vars"', '"os"', '"device"', '"culture"', 'cloud_resource']) assert.ok(!text.includes(s), `sent: ${s}`);
   for (const s of ['private-word', 'private-body', '?q=', '_auth', cookie.split('=')[1], `${app.name} on`]) assert.ok(!text.includes(s), `sent: ${s}`);
   if (os.hostname().length >= 6) assert.ok(!text.includes(os.hostname()), 'the machine\'s name was sent');
   assert.deepEqual(envelopes.filter((e) => !e.includes('"type":"event"')).map((e) => e.split('\n')[1]), [], 'nothing else is sent');

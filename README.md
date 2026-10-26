@@ -50,14 +50,27 @@ Behind that, for the Claude Code sessions that build apps:
 
 Every app made from the kit reports its unexpected errors to Sentry: a
 server error that answers 500, and an error thrown in a page.
-Only the error and where in the code it happened leave the app (its type,
-message and stack frames with file, line and column). Stripped from
-every report, on the server and in the page by the same rule
-(`public/crash.js`, which `lib/crash.js` also uses): the request (address,
-query, headers, cookie, body), the user, the transaction name, extra data,
-the server's name, the breadcrumbs that carry addresses, logs or page text
-(http, fetch, xhr, console, navigation, ui.*), and the query and fragment of
-every address in a stack frame. Reporting is on only when the environment
+Only the error and where in the code it happened leave the app: the
+error's type and message, how it was caught, and its stack frames with
+file, function, line and column. The same rule runs on the server and in
+the page (`public/crash.js`, which `lib/crash.js` also uses), and it keeps
+a short list rather than removing a few things: an event keeps its id,
+time, level, platform, environment, the SDK's name and version, and those
+exceptions; everything else is dropped. So nothing is sent of the request
+(address, query, headers, cookie, body), the user or the IP address (the
+page tells Sentry not to record it), the transaction name, extra data,
+tags, the server's name, the machine, operating system, device, locale or
+time zone, the installed modules, the source lines around each frame, local
+variables, the breadcrumbs that carry addresses, logs or page text (http,
+fetch, xhr, console, navigation, ui.*), or the query and fragment of any
+address in a stack frame. Sentry 11 gathers most of that by default
+whatever `sendDefaultPii` says, so `public/crash.js` also turns off its
+`dataCollection` options and the integrations that gather source lines,
+variables, contexts and modules. Two limits: an error's own message is
+sent as written, so code should not put what Dan typed into one; and a
+page's report travels as an ordinary request from his browser, which tells
+Sentry the app's address and the browser's name, as any request to another
+site does. Reporting is on only when the environment
 variable `SENTRY_DSN` is set; the server then writes it into every page as
 `<meta name="sentry-dsn">`. The DSN is public by Sentry's design: it only
 lets anyone send new events
