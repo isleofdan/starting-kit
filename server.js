@@ -1,8 +1,11 @@
 'use strict';
+// crash reporting first, so Sentry is set up before anything else loads (lib/crash.js)
+const crash = require('./lib/crash');
 // One plain Node server, made from isleofdan/starting-kit.
 //   /login (GET, POST), /logout, /app.css, /alive  — open
 //   /manifest.webmanifest, /sw.js, /install.js,
 //   /icon-192.png, /icon-512.png                   — open (installing on the phone)
+//   /sentry.min.js, /crash.js                      — open (crash reporting, also on the sign-in page)
 //   everything else (/, /status, an app's own)     — behind the passphrase cookie
 // Fail closed: with APP_PASSWORD or COOKIE_SECRET unset, only the sign-in
 // page serves, and it says the server is not configured.
@@ -98,13 +101,22 @@ route('GET', /^\/status$/, (req, res) => {
   sendHtml(res, 200, page('status.html', { ALIVE: aliveLine(), UPSTREAM_HEADLINE: headline, UPSTREAM_DETAIL: e ? e.message : '' }));
 });
 
+// The check that crash reporting works: an unexpected error, reported by the
+// catch at the bottom like any other, answered 500. The deploy's "Check a
+// crash reaches Sentry" step calls it; Sentry files its Wall card through
+// the Spine.
+route('POST', /^\/crash-test$/, () => {
+  throw new Error('crash-test: this app reports crashes');
+});
+
 // --- the server -------------------------------------------------------------
 
 // Installable on the phone by default (Dan, 23 Oct 2026: every web app
 // installs as a Chrome phone app unless there is a reason it shouldn't).
 // Chrome fetches the manifest and the icons without the cookie, and none of
 // these files holds anything of Dan's, so they are open like the stylesheet.
-const OPEN_FILES = new Set(['/app.css', '/sw.js', '/install.js', '/icon-192.png', '/icon-512.png']);
+// So is crash reporting's pair, which the sign-in page loads too.
+const OPEN_FILES = new Set(['/app.css', '/sw.js', '/install.js', '/icon-192.png', '/icon-512.png', '/sentry.min.js', '/crash.js']);
 
 // The manifest, named from app.json like everything else.
 function manifest() {
@@ -151,12 +163,25 @@ async function handle(req, res) {
 const server = http.createServer((req, res) => {
   handle(req, res).catch((e) => {
     const status = e.status || 500;
-    if (status >= 500) console.error(e.stack || e.message);
+    if (status >= 500) {
+      console.error(e.stack || e.message);
+      crash.captureException(e);
+    }
     if (!res.headersSent) sendJson(res, status, { error: status >= 500 ? 'something went wrong on the server' : e.message });
     else res.end();
   });
 });
 
 server.listen(PORT, () => console.log(`${app.name} on ${PORT}`));
+
+// On stop (Fly sends SIGINT, then kills after 5 s): send what was captured,
+// then close. A connection still open after 2 s more does not hold it up.
+for (const signal of ['SIGTERM', 'SIGINT']) {
+  process.once(signal, async () => {
+    await crash.flush(2000);
+    server.close(() => process.exit(0));
+    setTimeout(() => process.exit(0), 2000).unref();
+  });
+}
 
 module.exports = server;

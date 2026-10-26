@@ -50,7 +50,8 @@ files in a brief includes them.
 - **Gate.** The app's own sign-in page (`public/login.html`, `lib/auth.js`),
   never the browser's username-and-password box: phone in-app browsers
   never show it. Every route except `/login`, `/logout`, `/app.css`,
-  `/alive` and the five install files below stays behind the cookie.
+  `/alive`, the five install files below and crash reporting's
+  `/sentry.min.js` and `/crash.js` stays behind the cookie.
 - **Installable on the phone, by default.** Every screen links
   `/manifest.webmanifest`, the theme color, the icon and `/install.js`, so
   Chrome on Dan's phone offers **Install app** and the app opens full
@@ -80,6 +81,14 @@ files in a brief includes them.
   memory. (Origin: Spine, 23 Oct 2026: one manifest per page, then one
   scope per page; both times only the first page installed on Dan's
   phone, two wasted rounds.)
+- **Crash reporting on by default:** every app reports unexpected errors
+  to Sentry through `lib/crash.js` and `public/crash.js`; only the error
+  and its code location leave the app; a session turns it off only with a
+  stated reason. `/sentry.min.js` and `/crash.js` are open, because the
+  sign-in page loads them too; every page loads them, in that order,
+  before its own scripts. Reporting is on only when `SENTRY_DSN` is set
+  (`fly.toml`, `[env]`; empty in the kit). A new app's DSN:
+  `docs/NEW-APP.md`, "Crash reporting".
 - **Proofs sign in through the form.** Any claim that a screen works is
   proven by a browser that types the passphrase into the sign-in page.
   Never pre-supply credentials (Playwright `httpCredentials`, injected

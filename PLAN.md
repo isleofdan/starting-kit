@@ -8,8 +8,10 @@
 - **Stack.** The one the three live apps share (`isleofdan/miwa-english`,
   `isleofdan/hebrew-reader`, `isleofdan/french-ear`): one plain Node 22
   server, plain HTML and CSS, no build step, no web framework, a
-  `node:22-slim` Docker image, one Fly machine in Tokyo (`nrt`). No
-  runtime dependencies at all; Playwright only for screenshots.
+  `node:22-slim` Docker image, one Fly machine in Tokyo (`nrt`). The
+  only runtime dependencies are the two Sentry packages (`@sentry/node`,
+  `@sentry/browser`, crash reporting, kit-crash-one); Playwright only for
+  screenshots.
 - **The app's name** lives in `app.json` (`name`, `title`) and nowhere else.
   The Fly app is `<name>-dan`. The cookie's name comes from it too.
 - **Gate.** One passphrase (`APP_PASSWORD`), a signed 30-day cookie

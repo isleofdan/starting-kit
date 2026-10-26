@@ -30,6 +30,47 @@ Behind that, for the Claude Code sessions that build apps:
   session), `CLAUDE.md` (the rules every session on the app follows), and
   `docs/reports/` (one field report per session).
 
+## Routes
+
+- `/login` (the sign-in page and its form), `/logout`, `/alive` (the alive
+  line, plain text), `/app.css`: open.
+- `/manifest.webmanifest`, `/sw.js`, `/install.js`, `/icon-192.png`,
+  `/icon-512.png`: open, because Chrome fetches them without the cookie to
+  install the app on the phone.
+- `/sentry.min.js`, `/crash.js`: open, because the sign-in page loads them
+  too (crash reporting, below).
+- `/` (the sample screen), `/status` (the status page): behind the cookie,
+  like every route an app adds.
+- `POST /crash-test`: behind the cookie. It throws
+  `Error('crash-test: this app reports crashes')`, which the server reports
+  like any unexpected error and answers 500. Signed out it sends the
+  browser to the sign-in page (303). The deploy calls it.
+
+## Crash reports
+
+Every app made from the kit reports its unexpected errors to Sentry: a
+server error that answers 500, and an error thrown in a page.
+Only the error and where in the code it happened leave the app (its type,
+message and stack frames with file, line and column). Stripped from
+every report, on the server and in the page by the same rule
+(`public/crash.js`, which `lib/crash.js` also uses): the request (address,
+query, headers, cookie, body), the user, the transaction name, extra data,
+the server's name, the breadcrumbs that carry addresses, logs or page text
+(http, fetch, xhr, console, navigation, ui.*), and the query and fragment of
+every address in a stack frame. Reporting is on only when the environment
+variable `SENTRY_DSN` is set; the server then writes it into every page as
+`<meta name="sentry-dsn">`. The DSN is public by Sentry's design: it only
+lets anyone send new events
+(https://docs.sentry.io/concepts/key-terms/dsn-explainer/). In the kit it
+is empty (`fly.toml`, `[env]`), so the kit, `npm test` and a local run send
+nothing. A new app's session puts the app's own DSN there
+(`docs/NEW-APP.md`, "Crash reporting"). The deploy then signs in and calls
+`POST /crash-test` to prove the chain; each Sentry issue becomes a card on
+Dan's Wall in the Spine (Sentry's alert calls the Spine). The browser part
+is Sentry's own SDK, built into one file served from the app
+(`public/sentry.min.js`, `npm run build`, committed), so a page loads
+scripts only from its own site.
+
 How to start a new app from the kit: `docs/NEW-APP.md`.
 Where each piece came from: `docs/SOURCES.md`.
 What the shop is for: `SIGN.md`, copied into every app unchanged.
