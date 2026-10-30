@@ -139,3 +139,6 @@ loading/enforcement validation. No publication or live changes.
 Native-mode Spine compatibility and explicit root AGENTS.md entries are prepared
 locally. Real-code loopback contract tests pass; native runtime enforcement and
 semantic reviewer tests remain separate validation steps. No live changes.
+
+## Local preparation: Checks runner compatibility - 2026-10-30
+Pin Checks to ubuntu-24.04 after verifying the latest successful run used 24.04 and the unchanged Playwright 1.56.1 rejects the new 26.04 runner. Tests, dependencies and triggers remain unchanged. Local assertions pass; new hosted validation and publication remain pending independent review and confirmed scope. See docs/reports/checks-runner-compatibility-report.md. No merge, deployment or restart.
