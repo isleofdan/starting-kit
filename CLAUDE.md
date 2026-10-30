@@ -1,4 +1,4 @@
-# Rules for every Claude Code session on this app
+# Rules for every coding session on this app
 
 Read `SIGN.md` (what Dan's software shop is for) before changing anything.
 Read `README.md` and `PLAN.md` before changing anything. This app was made
@@ -113,8 +113,8 @@ files in a brief includes them.
 
 ## What an agent may and may not touch
 
-Claude Code enforces these from `.claude/settings.json` (`permissions`);
-this section says the same in words, with why. The line between them is
+These rules bind every harness. Claude Code enforces them from `.claude/settings.json` (`permissions`);
+other harnesses must verify their own sandbox and approval controls before work, without treating Claude allow rules as authority. This section states the shared boundaries, with why. The line between them is
 the cost of a wrong move: who sees it, and what it costs to undo.
 
 - **May, without asking:** edit files in the app, run the checks (`npm
@@ -146,22 +146,36 @@ These rules stop the commands an agent normally types, not every way of
 spelling them (Claude Code's own permissions page says so). They bound
 mistakes; they are not a lock against someone determined.
 
-## Cloud session limits
+## Hosted session limits
 
 Build on your own branch, open a pull request, ask Dan one yes/no to merge,
 and merge it yourself on yes. Do not push to `main` directly, delete any
 branch, or write `.claude/settings.json`.
 
-## The rented Linux machine and its OpenRig team
+## Choosing an executor and review lane
 
-On the rented Linux machine (`agent-machine-dan`) the OpenRig team (builder
-`dev-owner`, checker `dev-check`, rig `first-project-mixed`) is the default.
-Every brief either hands its change to the team or states in its first
-paragraph the reason it runs as plain Claude Code. The two reasons: (i) the
-job only reads or writes records (notes, cards, reports), with no code change
-for a checker to check; (ii) the job must survive the deploy-restart of that
-machine. For the procedure, follow the section "OpenRig team is the default"
-of `/data/home/dan/FACTS.md`.
+D-Dot leads model-neutral production. Default new coding work to a verified native ChatGPT/Codex cloud environment. Record a specific reason for laptop, 4090, Fly or another executor (hardware, local-only app/browser access or special runtime needs, for example). Do not invent an exception or force an unverified cloud route. Preserve ongoing tasks until safe handoff. This preference grants no additional access, credentials, security, merge or deploy authority.
+Cloud is the default for suitable new work; cloud means a hosted coding environment, not specifically
+Claude Code. The brief names executor/location, harness, builder model (or how
+to read it), independent checker and rationale. Verify access, actual permissions,
+tools, isolated work and recovery before depending on that route. Reports name
+the actual route, rationale, exact candidate and independent checker's verdict.
+Self-review alone is not independent review. Records-only work can state its
+no-code reason for no separate checker.
+
+Claude/OpenRig on agent-machine-dan remains supported when selected. Follow
+the section "OpenRig team is the default" (legacy heading) of
+`/data/home/dan/FACTS.md`, including clone/session coordination, fresh seats,
+permission checks, queue evidence, snapshot and same-job restore restrictions.
+The previous mandatory Fly/OpenRig defaults are superseded by Dan's accepted
+production direction; the safety and authorization rules are not.
+
+A machine session never merges any pull request, even on a relayed yes; the
+originating thread handles an authorized merge outside the machine. Elsewhere,
+merge and deploy still require Dan's explicit authorization for the action and
+target. An executor choice, checker PASS or changed factual state is not
+permission. Agent-machine changes disclose their restart impact before approval
+and preserve its busy-session wait/fail guard. No implicit force restart.
 
 ## Do not reverse
 

@@ -126,3 +126,16 @@ Dan, 23 Oct 2026: "I want all web apps we create in all Claude projects to be in
 ## Close-out: kit-crash-one — 2026-10-26 (agent-machine-dan, OpenRig team, from the Personal Shipyard toolkit thread)
 
 Every app made from the kit now reports its own crashes to Sentry, switched on only by a `SENTRY_DSN` in `fly.toml` (empty in the kit, so the kit and `npm test` send nothing); Sentry calls the Spine, which files one Wall card per issue. Server: `lib/crash.js`; browser: committed `public/sentry.min.js` plus `public/crash.js`; test route `POST /crash-test`; deploy step "Check a crash reaches Sentry". **Decided:** the scrub is a keep-list (only the error, how it was caught and its code location leave the app), with Sentry 11's `dataCollection` off and six gathering integrations skipped, because the checker found the reader's recipe sending five source lines per frame and machine data. The two Sentry packages are the kit's only runtime dependencies. Tests 10 → 21. **Next session needs:** this pull request merged; the first app made from the kit follows `docs/NEW-APP.md` step 4 for its DSN. Report: `docs/reports/kit-crash-one-report.md`.
+
+## Local draft: model-neutral-policy - 2026-10-30
+Verified native ChatGPT/Codex cloud is the proposed default for new suitable coding work, with specific exceptions, independent review and safe handoff. Claude/OpenRig remains available; authorization and privacy rules stay binding. Local-only draft; semantic reviewer replay and independent review pending. See docs/reports/model-neutral-policy-report.md. Nothing merged, installed or deployed.
+
+Local independent-review correction: output-schema/PR-head evidence and secure
+secret handoff tightened; 128 offline checks pass, 17 semantic cases prepared.
+Rollout remains blocked on companion Spine compatibility and native instruction
+loading/enforcement validation. No publication or live changes.
+
+## Local companion preparation - 2026-10-30
+Native-mode Spine compatibility and explicit root AGENTS.md entries are prepared
+locally. Real-code loopback contract tests pass; native runtime enforcement and
+semantic reviewer tests remain separate validation steps. No live changes.
